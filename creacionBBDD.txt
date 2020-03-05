@@ -1,0 +1,5 @@
+use incidencias_system_manager
+
+db.createCollection('incidencia')
+db.createCollection('empleado')
+db.createCollection('historial')
