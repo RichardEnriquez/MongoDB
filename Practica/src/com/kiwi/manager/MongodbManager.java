@@ -39,13 +39,13 @@ public class MongodbManager {
     public void insertEmpleado(Empleado empleado){
         MongoCollection<Document> collection = database.getCollection("empleado");
         collection.insertOne(new Document()
-                .append("nombre", empleado.getNombreUsu())
+                .append("nombreUsu", empleado.getNombreUsu())
                 .append("pass", empleado.getPass())
                 .append("nombre", empleado.getNombre())
                 .append("telefono", empleado.getTelefono())
         );
 
-       /* Document resultado = collection.find(eq("nombre","nombre que buscas")).first();
+/*        Document resultado = collection.find(eq("nombre",empleado.getNombre())).first();
         System.out.println(resultado.getString("nombre"));*/
     }
 
