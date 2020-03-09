@@ -6,27 +6,33 @@ import com.kiwi.manager.MongodbManager;
 
 public class Main {
     public static MongodbManager mongodbManager = MongodbManager.getInstance();
+    private static boolean login = false;
     public static void main(String[] args) {
 
-
-
         boolean start = true;
+
         do {
+            try {
+                if (!login){
+                    loginEmpleado();
+                }
 
-            switch (vistaMenu()){
-                case 1:
-                    insertarEmpleado();
-                    break;
+                switch (vistaMenu()) {
+                    case 1:
+                        insertarEmpleado();
+                        break;
 
 
+                    case 0:
+                        start = false;
+                        break;
+                    default:
+                        System.out.println("Opcion desconocida");
+                        break;
+                }
 
-
-                case 0:
-                    start = false;
-                    break;
-                default:
-                    System.out.println("Opcion desconocida");
-                    break;
+            }catch (Excepciones ex){
+                System.out.println(ex.getMessage());
             }
         }while (start);
 
@@ -57,9 +63,14 @@ public class Main {
         Empleado empleado = new Empleado(nombreUsu,pass,nombre,telefono);
         mongodbManager.insertEmpleado(empleado);
 
-        System.out.println("Empleado: "+nombre+" creado correctamente");
+        System.out.println("Empleado: "+nombre+" creado correctamente \n");
     }
 
+    /**
+     * funcion que se encarga de pedir datos para poder usar funcion de login en manager
+     * si logra hacer login dejaremos de pedir autentificacion en el bucle de main
+     * @throws Excepciones
+     */
     public static void loginEmpleado() throws Excepciones {
         String username = InputAsker.askString("Nombre de usuario");
         String pass = InputAsker.askString("Password");
@@ -67,8 +78,6 @@ public class Main {
         if (!mongodbManager.loginEmpleado(username,pass)){
             throw new Excepciones(1);
         }
-
+        login = true;
     }
-
-
 }
