@@ -1,4 +1,4 @@
-package com.kiwi.Modelo;
+package com.kiwi.vista;
 
 import java.io.BufferedReader;
 import java.io.IOException;

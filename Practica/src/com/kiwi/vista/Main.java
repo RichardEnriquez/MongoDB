@@ -1,15 +1,18 @@
-package com.kiwi;
+package com.kiwi.vista;
 
 import com.kiwi.Modelo.Empleado;
-import com.kiwi.Modelo.InputAsker;
+import com.kiwi.excepciones.Excepciones;
 import com.kiwi.manager.MongodbManager;
 
 public class Main {
     public static MongodbManager mongodbManager = MongodbManager.getInstance();
     public static void main(String[] args) {
 
+
+
         boolean start = true;
         do {
+
             switch (vistaMenu()){
                 case 1:
                     insertarEmpleado();
@@ -39,6 +42,9 @@ public class Main {
         return opcion;
     }
 
+    /**
+     * funcion que se encarga de pedir datos para usar una funcion que dara de alta a un nuevo empleado
+     */
     public static void insertarEmpleado(){
         System.out.println("*Registro nuevo empleado*");
 
@@ -53,4 +59,16 @@ public class Main {
 
         System.out.println("Empleado: "+nombre+" creado correctamente");
     }
+
+    public static void loginEmpleado() throws Excepciones {
+        String username = InputAsker.askString("Nombre de usuario");
+        String pass = InputAsker.askString("Password");
+
+        if (!mongodbManager.loginEmpleado(username,pass)){
+            throw new Excepciones(1);
+        }
+
+    }
+
+
 }
