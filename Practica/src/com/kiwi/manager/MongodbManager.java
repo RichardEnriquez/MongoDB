@@ -1,8 +1,13 @@
 package com.kiwi.manager;
 
 
+import com.kiwi.Modelo.Empleado;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class MongodbManager {
     private static MongodbManager instancia = null;
@@ -13,7 +18,6 @@ public class MongodbManager {
     private MongodbManager() {
         mongoClient = new MongoClient();
         database = mongoClient.getDatabase("incidencias_system_manager");
-
     }
 
     /**
@@ -28,7 +32,21 @@ public class MongodbManager {
         return instancia;
     }
 
-    
 
+
+    //FUNCIONES
+    //**************** INSERT ****************//
+    public void insertEmpleado(Empleado empleado){
+        MongoCollection<Document> collection = database.getCollection("empleado");
+        collection.insertOne(new Document()
+                .append("nombre", empleado.getNombreUsu())
+                .append("pass", empleado.getPass())
+                .append("nombre", empleado.getNombre())
+                .append("telefono", empleado.getTelefono())
+        );
+
+       /* Document resultado = collection.find(eq("nombre","nombre que buscas")).first();
+        System.out.println(resultado.getString("nombre"));*/
+    }
 
 }
