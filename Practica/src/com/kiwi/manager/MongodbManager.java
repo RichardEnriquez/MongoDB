@@ -6,6 +6,11 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.mongodb.client.model.Filters.*;
 
@@ -16,6 +21,10 @@ public class MongodbManager {
 
     //constructor
     private MongodbManager() {
+        //antes de crear una session o cliente ocultaremos informacion que da mongodb al realizar la conexion
+        Logger mongoLogger = Logger.getLogger( "org.mongodb.driver" );
+        mongoLogger.setLevel(Level.SEVERE);
+
         mongoClient = new MongoClient();
         database = mongoClient.getDatabase("incidencias_system_manager");
     }
@@ -28,6 +37,7 @@ public class MongodbManager {
     public static MongodbManager getInstance(){
         if(instancia == null){
             instancia = new MongodbManager();
+
         }
         return instancia;
     }
@@ -35,7 +45,14 @@ public class MongodbManager {
 
 
     //FUNCIONES
-    //**************** INSERT ****************//
+
+    /**
+     * funcion que se encarga de cerrar session de mongodb cuando es llamada
+     */
+    public void sessionClose(){
+        mongoClient.close();
+    }
+    //**************** INSERTS ****************//
 
     /**
      * Funcion que se encarga de registrar un nuevo empleado en la base de datos
@@ -55,6 +72,12 @@ public class MongodbManager {
         System.out.println(resultado.getString("nombre"));*/
     }
 
+
+
+
+
+
+    //**************** FINDS ****************//
     /**
      * funcion que se encarga de buscar a un usuario y comparar dos campos para poder hacer el login
      * @param username
@@ -73,6 +96,18 @@ public class MongodbManager {
             return false;
         }
         return true;
+    }
+
+
+    //**************** UPDATES ****************//
+    public void updateEmpleado(/*Empleado empleado*/){
+        MongoCollection<Document> collection = database.getCollection("empleado");
+        Document resultado = (Document) collection.find(
+                        eq("_id",new ObjectId("5e662f1469a749110478bf2e"))
+        ).first();
+
+        System.out.println(resultado);
+
     }
 
 }

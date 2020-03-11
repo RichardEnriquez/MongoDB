@@ -10,7 +10,6 @@ public class Main {
     public static void main(String[] args) {
 
         boolean start = true;
-
         do {
             try {
                 if (!login){
@@ -20,6 +19,10 @@ public class Main {
                 switch (vistaMenu()) {
                     case 1:
                         insertarEmpleado();
+                        break;
+
+                    case 2:
+                        updateEmpleado();
                         break;
 
 
@@ -35,6 +38,8 @@ public class Main {
                 System.out.println(ex.getMessage());
             }
         }while (start);
+        //cuando termine la aplicacion podremos cerrar base de datos
+        mongodbManager.sessionClose();
 
 
     }
@@ -79,5 +84,9 @@ public class Main {
             throw new Excepciones(1);
         }
         login = true;
+    }
+
+    public static void updateEmpleado(){
+        mongodbManager.updateEmpleado();
     }
 }
