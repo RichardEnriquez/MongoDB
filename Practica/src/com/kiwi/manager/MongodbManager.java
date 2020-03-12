@@ -2,6 +2,7 @@ package com.kiwi.manager;
 
 
 import com.kiwi.Modelo.Empleado;
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -52,6 +53,26 @@ public class MongodbManager {
     public void sessionClose(){
         mongoClient.close();
     }
+
+    /**
+     * funcion que se encarga de verificar si el username existe en la bbdd collection empleado
+     * usaremos esta funcion para detectar campo que no puede ser repetido aunque nos la permite meter en mongodb
+     *
+     * @param userName nombre username
+     * @return false si no existe
+     */
+    public boolean ExistUserName(String userName){
+        MongoCollection<Document> collection = database.getCollection("empleado");
+        Document resultado = (Document) collection.find(
+                        eq("username",userName)
+        ).first();
+
+        if(resultado != null){
+            return true;
+        }
+        return false;
+    }
+
     //**************** INSERTS ****************//
 
     /**
@@ -62,14 +83,24 @@ public class MongodbManager {
     public void insertEmpleado(Empleado empleado){
         MongoCollection<Document> collection = database.getCollection("empleado");
         collection.insertOne(new Document()
-                .append("nombreUsu", empleado.getNombreUsu())
+                .append("username", empleado.getUsername())
                 .append("pass", empleado.getPass())
                 .append("nombre", empleado.getNombre())
                 .append("telefono", empleado.getTelefono())
         );
 
-/*        Document resultado = collection.find(eq("nombre",empleado.getNombre())).first();
+/*      Document resultado = collection.find(eq("nombre",empleado.getNombre())).first();
         System.out.println(resultado.getString("nombre"));*/
+    }
+
+    public Document datosUsuario(String userName){
+        MongoCollection<Document> collection = database.getCollection("empleado");
+        Document resultado = (Document) collection.find(
+                eq("username",userName)
+
+        ).first();
+
+        return resultado;
     }
 
 
@@ -88,26 +119,58 @@ public class MongodbManager {
         MongoCollection<Document> collection = database.getCollection("empleado");
         Document resultado = (Document) collection.find(
                                             and(
-                                                eq("nombreUsu",username),
+                                                eq("username",username),
                                                 eq("pass",pass)
                                             )
                                         ).first();
-        if(resultado == null){
-            return false;
+        if(resultado != null){
+            return true;
         }
-        return true;
+        return false;
     }
 
 
-    //**************** UPDATES ****************//
-    public void updateEmpleado(/*Empleado empleado*/){
+    /**
+     * funcion que se encargar de buscar el _id de un empleado que esta registrado en la colleccion buscado por su username como campo clave
+     * @param userName nombre que buscaremos en la base de datos
+     * @return _id en modo String
+     */
+    public String idUsuarioByUserName(String userName){
         MongoCollection<Document> collection = database.getCollection("empleado");
         Document resultado = (Document) collection.find(
-                        eq("_id",new ObjectId("5e662f1469a749110478bf2e"))
+                eq("username",userName)
+
         ).first();
+        return resultado.getObjectId("_id").toString();
+    }
 
-        System.out.println(resultado);
 
+
+    //**************** UPDATES ****************//
+
+    /**
+     * fucion que se encarga de actualizar los datos de un empleado buscando su _id
+     * tendremos que pasarle el objeto empleado con los datos ya modificados
+     * @param empleado objeto ya seteado
+     */
+    public void updateEmpleado(Empleado empleado){
+        MongoCollection<Document> collection = database.getCollection("empleado");
+
+        BasicDBObject search = new BasicDBObject();
+        //primero intente modificar pasando el _id en modo String pero como no funciono
+        //pense que si en ves de tipo String pongo un ObjetID y puuuuuuuuuuuuuum wala si sirve :D
+        search.append("_id", new ObjectId(empleado.get_ID()));
+
+        Document setData = new Document();
+        setData.append("username", empleado.getUsername())
+                .append("pass", empleado.getPass())
+                .append("nombre",empleado.getNombre())
+                .append("telefono",empleado.getTelefono());
+
+        Document update = new Document();
+        update.append("$set", setData);
+
+        //System.out.println(collection.updateOne(search,update));
     }
 
 }
