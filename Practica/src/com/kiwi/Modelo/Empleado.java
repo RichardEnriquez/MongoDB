@@ -1,24 +1,25 @@
 package com.kiwi.Modelo;
 
 public class Empleado {
-    private String nombreUsu;
+    private String _ID = null;
+    private String username;
     private String pass;
     private String nombre;
     private int telefono;
 
-    public Empleado(String nombreUsu, String pass, String nombre, int telefono) {
-        this.nombreUsu = nombreUsu;
+    public Empleado(String username, String pass, String nombre, int telefono) {
+        this.username = username;
         this.pass = pass;
         this.nombre = nombre;
         this.telefono = telefono;
     }
 
-    public String getNombreUsu() {
-        return nombreUsu;
+    public String getUsername() {
+        return username;
     }
 
-    public void setNombreUsu(String nombreUsu) {
-        this.nombreUsu = nombreUsu;
+    public void setUsername(String nombreUsu) {
+        this.username = nombreUsu;
     }
 
     public String getPass() {
@@ -43,5 +44,23 @@ public class Empleado {
 
     public void setTelefono(int telefono) {
         this.telefono = telefono;
+    }
+
+    public String get_ID() {
+        return _ID;
+    }
+
+    public void set_ID(String _ID) {
+        this._ID = _ID;
+    }
+
+    @Override
+    public String toString() {
+        return "Empleado{" +
+                " username='" + username + '\'' +
+                ", pass='" + pass + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", telefono=" + telefono +
+                '}';
     }
 }
