@@ -1,6 +1,7 @@
 package com.kiwi.vista;
 
 import com.kiwi.Modelo.Empleado;
+import com.kiwi.Modelo.Historial;
 import com.kiwi.Modelo.Incidencia;
 import com.kiwi.excepciones.Excepciones;
 import com.kiwi.manager.MongodbManager;
@@ -145,6 +146,11 @@ public class Main {
         empleado.set_ID(_id);
         empleadoLogueado = empleado;
 
+        //ahora guardamos historial
+        SimpleDateFormat format2 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String fechaHora2 = format2.format(new Date());
+        Historial historial = new Historial("I", fechaHora2, empleadoLogueado.getUsername());
+        mongodbManager.insertarEvento(historial);
     }
 
 
@@ -245,6 +251,16 @@ public class Main {
         Incidencia incidencia = new Incidencia(fechaHora,origen,destino,detalle,tipo);
         mongodbManager.insertIncidencia(incidencia);
 
+        //tambien insertaremos el historial aca si es tipo urgente
+        if (tipo.equalsIgnoreCase("urgente")){
+
+            SimpleDateFormat format2 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            String fechaHora2 = format2.format(new Date());
+
+            Historial historial = new Historial("U", fechaHora2, empleadoLogueado.getUsername());
+            mongodbManager.insertarEvento(historial);
+        }
+
         System.out.println("*Incidencia creada correctamente*\n");
     }
 
@@ -290,6 +306,12 @@ public class Main {
         }
 
         System.out.print("\n");
+
+        //guardamos historial cuando consulta incidencias de un empleado
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String fechaHora = format.format(new Date());
+        Historial historial = new Historial("E", fechaHora, empleadoLogueado.getUsername());
+        mongodbManager.insertarEvento(historial);
     }
 
     /**
@@ -322,6 +344,11 @@ public class Main {
         }
         System.out.print("\n");
 
+        //guardamos historial cuando consulta incidencias de un empleado
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String fechaHora = format.format(new Date());
+        Historial historial = new Historial("E", fechaHora, empleadoLogueado.getUsername());
+        mongodbManager.insertarEvento(historial);
     }
 
 

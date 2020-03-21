@@ -2,6 +2,7 @@ package com.kiwi.manager;
 
 
 import com.kiwi.Modelo.Empleado;
+import com.kiwi.Modelo.Historial;
 import com.kiwi.Modelo.Incidencia;
 import com.kiwi.excepciones.Excepciones;
 import com.mongodb.*;
@@ -11,7 +12,9 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -328,6 +331,12 @@ public class MongodbManager {
         return incidencias;
     }
 
+    /**
+     * funcion que se encarga de retirnar una lista de todas las incidencias de un empleado de origen
+     * @param e empleado con sus datos
+     * @return list Incidencias
+     * @throws Excepciones por si no se encunetra con ningun documneto con orgien
+     */
     public List<Incidencia> getIncidenciaByOrigen(Empleado e) throws Excepciones {
         MongoCollection<Document> collection = database.getCollection("incidencia");
 
@@ -353,6 +362,18 @@ public class MongodbManager {
         }
         return incidencias;
     }
+
+    public void insertarEvento(Historial historial){
+        MongoCollection<Document> collection = database.getCollection("historial");
+        collection.insertOne(new Document()
+                .append("tipoEvent", historial.getTipoEvent())
+                .append("fechaHora", historial.getFechaHora())
+                .append("nombreUsuario", historial.getNombreUsuario())
+        );
+
+    }
+
+
 
 
 }
