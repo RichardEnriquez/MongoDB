@@ -54,4 +54,15 @@ public class Incidencia {
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
+
+    @Override
+    public String toString() {
+        return "Incidencia{" +
+                "fechaHora='" + fechaHora + '\'' +
+                ", origen='" + origen + '\'' +
+                ", destino='" + destino + '\'' +
+                ", detalle='" + detalle + '\'' +
+                ", tipo='" + tipo + '\'' +
+                '}';
+    }
 }

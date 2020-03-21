@@ -6,6 +6,11 @@ import com.kiwi.excepciones.Excepciones;
 import com.kiwi.manager.MongodbManager;
 import org.bson.Document;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 
 public class Main {
     public static MongodbManager mongodbManager = MongodbManager.getInstance();
@@ -33,6 +38,25 @@ public class Main {
                         removeEmpleado();
                         break;
 
+                    case 4:
+                        getIncidenciaById();
+                        break;
+
+                    case 5:
+                        showAllIncidencias();
+                        break;
+
+                    case 6:
+                        insertIncidencia();
+                        break;
+
+                    case 7:
+                        showIncidenciasByDestino();
+                        break;
+
+                    case 8:
+                        showIncidenciasByOrigen();
+                        break;
 
 /*                    case 10:
                         mongodbManager.idUsuarioByUserName("x");
@@ -61,6 +85,14 @@ public class Main {
         System.out.println("*--- BIENVENIDO ---*");
         System.out.println("1. Nuevo empleado");
         System.out.println("2. Editar perfil");
+        System.out.println("3. Eliminar perfil");
+        System.out.println("4. Obtener incidencia");
+        System.out.println("5. Mostrar incidencias");
+        System.out.println("6. Insertar incidencia");
+        System.out.println("7. Obtener incidencias por destino");
+        System.out.println("8. Obtener incidencias por origen");
+
+
         System.out.println("0. Salir");
 
         int opcion = InputAsker.askInt("Seleccione opcion: ");
@@ -186,7 +218,112 @@ public class Main {
         }
     }
 
-    public static void getIncidenciaById(){
-       // Incidencia incidencia = mongodbManager.
+    public static void getIncidenciaById() throws Excepciones{
+        Incidencia incidencia = mongodbManager.getIncidenciaById(empleadoLogueado.getUsername());
+        System.out.println(incidencia);
     }
+
+    /**
+     * funcion que se encarga de registrar incidencia
+     */
+    public static void insertIncidencia() {
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+
+        String fechaHora = format.format(new Date());
+
+        List<Empleado> empleados = mongodbManager.listaEmpleados();
+        System.out.println("  **Empleados** ");
+        for (Empleado empleado: empleados){
+            System.out.println("-- "+empleado.getUsername());
+        }
+        String origen = empleadoLogueado.getUsername() ;
+        String destino =InputAsker.askString("Indique a quien va dirigido esta incidencia: ");
+
+        String detalle = InputAsker.askString("Indique el detalle de esta Incidencia: ");
+        String tipo =  InputAsker.askString("Que tipo es: URGENTE/NORMAL: ");
+
+        Incidencia incidencia = new Incidencia(fechaHora,origen,destino,detalle,tipo);
+        mongodbManager.insertIncidencia(incidencia);
+
+        System.out.println("*Incidencia creada correctamente*\n");
+    }
+
+    /**
+     * Funcion que se encarga de mostrar todas las incidencias que existen en la bbdd collection incidencias
+     */
+    public static void showAllIncidencias(){
+        List<Incidencia> incidencias = mongodbManager.selectAllIncidencias();
+        System.out.println("\n** INCIDENCIAS **");
+        for (Incidencia doc : incidencias){
+            System.out.println(doc);
+        }
+        System.out.print("\n");
+    }
+
+    /**
+     * funcion que se encarga de mostrar las incidencias que estan asignadas a un destino es decir a un usuario
+     * @throws Excepciones por si en destino es erroneo o si el destino no dispone de incidencias
+     */
+    public static void showIncidenciasByDestino() throws Excepciones {
+
+        System.out.println(" **EMPLEADOS**");
+        List<Empleado> empleados = mongodbManager.listaEmpleados();
+        for (Empleado empleado: empleados){
+            System.out.println(" * "+empleado.getUsername());
+        }
+        String destino = InputAsker.askString("Indique a que destino/empleado quiere ver sus incidencias: ");
+
+        if (!mongodbManager.ExistUserName(destino)){
+            throw new Excepciones(8);
+        }
+
+        Empleado empleado = mongodbManager.getEmpleadoByUsername(destino);
+
+        List<Incidencia> incidencias = mongodbManager.getIncidenciaByDestino(empleado);
+        if (incidencias.isEmpty()){
+            throw new Excepciones(9);
+        }
+
+        System.out.println("**INCIDENCIAS DE "+empleado.getUsername().toUpperCase()+" **");
+        for (Incidencia incidencia: incidencias){
+            System.out.println("* "+incidencia);
+        }
+
+        System.out.print("\n");
+    }
+
+    /**
+     * funcion que se encarga de mostrar todas las incidencias de un orgen en concreto
+     * @throws Excepciones por si el origen no existe o si por si no hay incidencias del origen
+     */
+    public static void showIncidenciasByOrigen() throws Excepciones {
+
+        System.out.println(" **EMPLEADOS**");
+        List<Empleado> empleados = mongodbManager.listaEmpleados();
+        for (Empleado empleado: empleados){
+            System.out.println(" * "+empleado.getUsername());
+        }
+        String origen = InputAsker.askString("Indique el origen del que quiere ver sus incidencias: ");
+
+        if (!mongodbManager.ExistUserName(origen)){
+            throw new Excepciones(8);
+        }
+
+        Empleado empleado = mongodbManager.getEmpleadoByUsername(origen);
+
+        List<Incidencia> incidencias = mongodbManager.getIncidenciaByOrigen(empleado);
+        if (incidencias.isEmpty()){
+            throw new Excepciones(9);
+        }
+
+        System.out.println("** INCIDENCIAS DE "+empleado.getUsername().toUpperCase()+" **");
+        for (Incidencia incidencia: incidencias){
+            System.out.println("* "+incidencia);
+        }
+        System.out.print("\n");
+
+    }
+
+
+
 }

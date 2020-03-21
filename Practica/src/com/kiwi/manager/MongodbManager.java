@@ -2,14 +2,17 @@ package com.kiwi.manager;
 
 
 import com.kiwi.Modelo.Empleado;
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
+import com.kiwi.Modelo.Incidencia;
+import com.kiwi.excepciones.Excepciones;
+import com.mongodb.*;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,8 +76,6 @@ public class MongodbManager {
         return false;
     }
 
-    //**************** INSERTS ****************//
-
     /**
      * Funcion que se encarga de registrar un nuevo empleado en la base de datos
      * tendremos que pasarle un objeto tipo empleado
@@ -104,11 +105,6 @@ public class MongodbManager {
     }
 
 
-
-
-
-
-    //**************** FINDS ****************//
     /**
      * funcion que se encarga de buscar a un usuario y comparar dos campos para poder hacer el login
      * @param username
@@ -146,8 +142,6 @@ public class MongodbManager {
 
 
 
-    //**************** UPDATES ****************//
-
     /**
      * fucion que se encarga de actualizar los datos de un empleado buscando su _id
      * tendremos que pasarle el objeto empleado con los datos ya modificados
@@ -174,8 +168,6 @@ public class MongodbManager {
     }
 
 
-    //**************** DELETES ****************//
-
     /**
      * funcion que se encarga de eliminar un empleado en la base de datos por su username
      * @param empleado
@@ -188,6 +180,179 @@ public class MongodbManager {
         collection.findOneAndDelete(findDocument);
     }
 
-    
+
+    /**
+     * Funcion que se encarga de retornar una incidencia por el id del que se logueo
+     * en este caso el id es el username (Perdon mar :( )
+     * @param id username del logueado
+     * @return Incidencia
+     * @throws Excepciones si no hay ninguna incidencia asignada al username saltara excepcion
+     */
+    public Incidencia getIncidenciaById(String id) throws Excepciones {
+
+        MongoCollection<Document> collection = database.getCollection("incidencia");
+
+        Document resultado = (Document) collection.find(
+                eq("destino",id)
+        ).first();
+
+        if (resultado == null){
+            throw new Excepciones(6);
+        }
+
+        String fecha = resultado.getString("fechaHora");
+        String origen = resultado.getString("origen");
+        String destino = resultado.getString("destino");
+        String detalle = resultado.getString("detalle");
+        String tipo = resultado.getString("tipo");
+
+        Incidencia incidencia = new Incidencia(fecha,origen,destino,detalle,tipo);
+        return incidencia;
+    }
+
+    /**
+     * funcion que se encarga de retornar una lista con todas las incidencias que existen
+     * @return List<Incidencia>
+     */
+    public List<Incidencia> selectAllIncidencias(){
+        MongoCollection<Document> collection = database.getCollection("incidencia");
+
+        FindIterable<Document> resultado = collection.find();
+        List<Incidencia> incidencias = new ArrayList<>();
+
+        for (Document doc : resultado) {
+            String fecha = doc.getString("fechaHora");
+            String origen = doc.getString("origen");
+            String destino = doc.getString("destino");
+            String detalle = doc.getString("detalle");
+            String tipo = doc.getString("tipo");
+
+            Incidencia incidencia = new Incidencia(fecha,origen,destino,detalle,tipo);
+            incidencias.add(incidencia);
+        }
+
+        return incidencias;
+    }
+
+
+    /**
+     * funcion que se encarga de registrar un objeto tipo incidencia en la bbdd callection incidencia
+     * @param i objeto con datos
+     */
+    public void insertIncidencia(Incidencia i){
+        MongoCollection<Document> collection = database.getCollection("incidencia");
+        collection.insertOne(new Document()
+                .append("fechaHora", i.getFechaHora())
+                .append("origen", i.getOrigen())
+                .append("destino", i.getDestino())
+                .append("detalle", i.getDetalle())
+                .append("tipo", i.getTipo())
+        );
+    }
+
+    /**
+     * funcion que se encarga de retornar todos los empleados con sus datos registrados en la base de datos
+     * @return list<Empleados>
+     */
+    public List<Empleado> listaEmpleados(){
+        MongoCollection<Document> collection = database.getCollection("empleado");
+
+        FindIterable<Document> resultado = collection.find();
+        List<Empleado> empleados = new ArrayList<>();
+
+        for (Document doc : resultado) {
+
+            ObjectId _ID = doc.getObjectId("_id");
+            String username = doc.getString("username");
+            String pass = doc.getString("pass");
+            String nombre = doc.getString("nombre");
+            int telefono = doc.getInteger("telefono");
+
+            Empleado empleado = new Empleado(username,pass,nombre,telefono);
+            empleado.set_ID(_ID.toString());
+            empleados.add(empleado);
+        }
+        return empleados;
+    }
+
+    public Empleado getEmpleadoByUsername(String username){
+        MongoCollection<Document> collection = database.getCollection("empleado");
+        Document resultado = (Document) collection.find(
+                eq("username",username)
+
+        ).first();
+
+
+        Empleado empleado = new Empleado(
+                (String) resultado.get("username"),
+                (String) resultado.get("pass"),
+                (String) resultado.get("nombre"),
+                (Integer) resultado.get("telefono")
+
+                );
+        empleado.set_ID(resultado.getObjectId("_id").toString());
+
+        return empleado;
+    }
+
+
+    /**
+     * funcion que se encarga de mostrar las incidencias de un empleado por su username y si perdon mar pero el modelo esta asi :(
+     * @param e Empleado que buscaremos por username
+     * @return Lista de incidencia
+     * @throws Excepciones por si el destino es erroneo
+     */
+    public List<Incidencia> getIncidenciaByDestino(Empleado e) throws Excepciones {
+        MongoCollection<Document> collection = database.getCollection("incidencia");
+
+        FindIterable<Document> resultado = collection.find(
+                eq("destino",e.getUsername())
+        );
+
+        if (resultado == null){
+            throw new Excepciones(7);
+        }
+
+        List<Incidencia> incidencias = new ArrayList<>();
+        for (Document doc : resultado) {
+
+            String fecha = doc.getString("fechaHora");
+            String origen = doc.getString("origen");
+            String destino = doc.getString("destino");
+            String detalle = doc.getString("detalle");
+            String tipo = doc.getString("tipo");
+
+            Incidencia incidencia = new Incidencia(fecha, origen, destino, detalle, tipo);
+            incidencias.add(incidencia);
+        }
+        return incidencias;
+    }
+
+    public List<Incidencia> getIncidenciaByOrigen(Empleado e) throws Excepciones {
+        MongoCollection<Document> collection = database.getCollection("incidencia");
+
+        FindIterable<Document> resultado = collection.find(
+                eq("origen",e.getUsername())
+        );
+
+        if (resultado == null){
+            throw new Excepciones(7);
+        }
+
+        List<Incidencia> incidencias = new ArrayList<>();
+        for (Document doc : resultado) {
+
+            String fecha = doc.getString("fechaHora");
+            String origen = doc.getString("origen");
+            String destino = doc.getString("destino");
+            String detalle = doc.getString("detalle");
+            String tipo = doc.getString("tipo");
+
+            Incidencia incidencia = new Incidencia(fecha, origen, destino, detalle, tipo);
+            incidencias.add(incidencia);
+        }
+        return incidencias;
+    }
+
 
 }
