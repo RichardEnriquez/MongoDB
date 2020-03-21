@@ -7,7 +7,7 @@ public class Excepciones extends Exception{
             "< ERROR 002: Las contraseñas no coinciden >\n",
             "< ERROR 003: Opcion desconocida >\n",
             "< ERROR 004: El username es igual que el original >\n",
-
+            "< ERROR 005: Password incorrecto >\n",
 
     };
 

@@ -9,9 +9,10 @@ import org.bson.Document;
 public class Main {
     public static MongodbManager mongodbManager = MongodbManager.getInstance();
     private static Empleado empleadoLogueado = null;
+    private static boolean start = true;
+
     public static void main(String[] args) {
 
-        boolean start = true;
         do {
             try {
                 if (empleadoLogueado == null){
@@ -25,6 +26,10 @@ public class Main {
 
                     case 2:
                         updateEmpleado();
+                        break;
+
+                    case 3:
+                        removeEmpleado();
                         break;
 
 
@@ -65,7 +70,7 @@ public class Main {
      * funcion que se encarga de pedir datos para usar una funcion que dara de alta a un nuevo empleado
      */
     public static void insertarEmpleado(){
-        System.out.println("*Registro nuevo empleado*");
+        System.out.println("\n*Registro nuevo empleado*");
 
         String nombreUsu = InputAsker.askString("Indique User name: ");
         String pass = InputAsker.askString("Indique Password: ");
@@ -87,8 +92,9 @@ public class Main {
      * @throws Excepciones
      */
     public static void loginEmpleado() throws Excepciones {
-        String username = InputAsker.askString("Nombre de usuario");
-        String pass = InputAsker.askString("Password");
+
+        String username = InputAsker.askString("Nombre de usuario: ");
+        String pass = InputAsker.askString("Password: ");
         System.out.print("\n");
 
         if (!mongodbManager.loginEmpleado(username,pass)){
@@ -115,7 +121,8 @@ public class Main {
      * @throws Excepciones
      */
     public static void updateEmpleado() throws Excepciones {
-        System.out.println("\n"+empleadoLogueado);
+        System.out.println("\n*Edicion de perfil*");
+        System.out.println(empleadoLogueado);
 
         String campo = InputAsker.askString("Indique que campo quiere cambiar: ");
         switch (campo.toLowerCase()){
@@ -158,6 +165,23 @@ public class Main {
             default:
                 throw new Excepciones(3);
         }
+    }
 
+    /**
+     * funcion que se encarga de eliminar la cuenta que esta logueada, cerrara la aplicacion cuando se elimine
+     * @throws Excepciones
+     */
+    public static void removeEmpleado() throws Excepciones {
+        String confirmacion = InputAsker.askString("¿Estas seguro que quieres eliminar esta cuenta? \nYES/NO: ");
+        if (confirmacion.equalsIgnoreCase("yes") || confirmacion.equalsIgnoreCase("y")){
+            String pass = InputAsker.askString("Contrasena: ");
+            if (!pass.equals(empleadoLogueado.getPass())){
+                throw new Excepciones(5);
+            }
+            mongodbManager.removeEmpleado(empleadoLogueado);
+            System.out.println("**Esta cuenta fue eliminada**");
+            start = false;
+
+        }
     }
 }

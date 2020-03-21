@@ -173,4 +173,11 @@ public class MongodbManager {
         //System.out.println(collection.updateOne(search,update));
     }
 
+
+    //**************** DELETES ****************//
+    public void removeEmpleado(Empleado empleado){
+        MongoCollection<Document> collection = database.getCollection("empleado");
+
+    }
+
 }
