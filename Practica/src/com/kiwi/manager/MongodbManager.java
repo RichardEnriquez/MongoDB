@@ -175,9 +175,19 @@ public class MongodbManager {
 
 
     //**************** DELETES ****************//
+
+    /**
+     * funcion que se encarga de eliminar un empleado en la base de datos por su username
+     * @param empleado
+     */
     public void removeEmpleado(Empleado empleado){
         MongoCollection<Document> collection = database.getCollection("empleado");
-
+        // Create the document to specify find criteria
+        Document findDocument = new Document("username", empleado.getUsername());
+        // Find one person and delete
+        collection.findOneAndDelete(findDocument);
     }
+
+    
 
 }

@@ -1,6 +1,7 @@
 package com.kiwi.vista;
 
 import com.kiwi.Modelo.Empleado;
+import com.kiwi.Modelo.Incidencia;
 import com.kiwi.excepciones.Excepciones;
 import com.kiwi.manager.MongodbManager;
 import org.bson.Document;
@@ -183,5 +184,9 @@ public class Main {
             start = false;
 
         }
+    }
+
+    public static void getIncidenciaById(){
+       // Incidencia incidencia = mongodbManager.
     }
 }
