@@ -12,6 +12,7 @@ public class Excepciones extends Exception{
             "< ERROR 007: No se encontraron resultados >\n",
             "< ERROR 008: Destino incorrecto >\n",
             "< ERROR 009: No dispone de incidencias >\n",
+            "< ERROR 010: Este usuario aun no inicio session >\n",
 
     };
 

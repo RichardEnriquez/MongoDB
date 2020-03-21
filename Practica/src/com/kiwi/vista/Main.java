@@ -59,6 +59,10 @@ public class Main {
                         showIncidenciasByOrigen();
                         break;
 
+                    case 9:
+                        showUltimoAcceso();
+                        break;
+
 /*                    case 10:
                         mongodbManager.idUsuarioByUserName("x");
                         break;*/
@@ -92,6 +96,8 @@ public class Main {
         System.out.println("6. Insertar incidencia");
         System.out.println("7. Obtener incidencias por destino");
         System.out.println("8. Obtener incidencias por origen");
+        System.out.println("9. Obtener Fecha de ultimo acceso");
+
 
 
         System.out.println("0. Salir");
@@ -351,6 +357,26 @@ public class Main {
         mongodbManager.insertarEvento(historial);
     }
 
+    /**
+     * funcion  que se encarga de mostrar el ultimo acceso de un empleado enconcreto
+     */
+    public static void showUltimoAcceso() throws Excepciones {
+        System.out.println("**EMPLEADOS**");
+        List<Empleado> empleados = mongodbManager.listaEmpleados();
+        for (Empleado empleado: empleados){
+            System.out.println(" * "+empleado.getUsername());
+        }
+        String emplead = InputAsker.askString("Indique el nombre del empleado que quiere ver su ultimo acceso: ");
+
+        if (!mongodbManager.ExistUserName(emplead)){
+            throw new Excepciones(8);
+        }
+        Empleado empleado = mongodbManager.getEmpleadoByUsername(emplead);
+
+        Historial historial = mongodbManager.getUltimoInicioSesion(empleado);
+        System.out.println("El ultimo acceso fue");
+        System.out.println(historial.getFechaHora()+"\n");
+    }
 
 
 }

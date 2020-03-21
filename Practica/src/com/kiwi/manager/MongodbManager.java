@@ -10,6 +10,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.text.SimpleDateFormat;
@@ -373,7 +374,39 @@ public class MongodbManager {
 
     }
 
+    /**
+     * funcion que se encarga de retornar objeto historial de un empleado pasado por parametro
+     * @param e empleado que buscaremos sus datos de historial
+     * @return Historial
+     * @throws Excepciones por si el usuario buscado no a iniciado session aun
+     */
+    public Historial getUltimoInicioSesion(Empleado e) throws Excepciones {
+        MongoCollection<Document> collection = database.getCollection("historial");
+
+        FindIterable<Document> resultado = collection.find(
+                and(
+                        eq("tipoEvent","I"),
+                        eq("nombreUsuario", e.getUsername())
+                )
+        );
+        //ascendente (1) o descendente (-1)
+        Document sortingDocument = new Document("fechaHora", -1);
+        FindIterable<Document> listaOrdenada = resultado.sort(sortingDocument);
+        Document datos = listaOrdenada.first();
+
+        if (datos == null){
+           throw  new Excepciones(10);
+        }
+        Historial historial = new Historial(
+                datos.getString("tipoEvent"),
+                datos.getString("fechaHora"),
+                datos.getString("nombreUsuario")
+        );
+
+        return historial;
+    }
 
 
 
+    
 }
