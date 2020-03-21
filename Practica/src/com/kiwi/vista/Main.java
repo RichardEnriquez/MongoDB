@@ -67,10 +67,6 @@ public class Main {
                     case 10:
                         getRankingByIncidencias();
                         break;
-/*                    case 10:
-                        mongodbManager.idUsuarioByUserName("x");
-                        break;*/
-
 
                     case 0:
                         start = false;
@@ -101,9 +97,7 @@ public class Main {
         System.out.println("7. Obtener incidencias por destino");
         System.out.println("8. Obtener incidencias por origen");
         System.out.println("9. Obtener Fecha de ultimo acceso");
-
-
-
+        System.out.println("10. Obtener Ranking de empleados");
         System.out.println("0. Salir");
 
         int opcion = InputAsker.askInt("Seleccione opcion: ");
