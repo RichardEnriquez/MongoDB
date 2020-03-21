@@ -4,23 +4,25 @@ package com.kiwi.manager;
 import com.kiwi.Modelo.Empleado;
 import com.kiwi.Modelo.Historial;
 import com.kiwi.Modelo.Incidencia;
+import com.kiwi.Modelo.RankingTO;
 import com.kiwi.excepciones.Excepciones;
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
 
 public class MongodbManager {
     private static MongodbManager instancia = null;
@@ -407,6 +409,34 @@ public class MongodbManager {
     }
 
 
+    /**
+     * funcion que se encarga de devolver una lista con el top de empleados que tengan mas incidencias urgentes asignadas
+     * @return List<RankingTo>
+     */
+    public List<RankingTO> getRankingEmpleados(){
+        MongoCollection<Document> collection = database.getCollection("incidencia");
+        List<RankingTO> ranking = new ArrayList<>();
+        List<Empleado> empleados = listaEmpleados();
+        for (Empleado empleado: empleados){
 
-    
+            FindIterable<Document> resultado = collection.find(
+                    and(
+                            eq("destino", empleado.getUsername()),
+                            eq("tipo","urgente")
+                    )
+            );
+            int cantidad = 0;
+            for (Document x: resultado){
+                cantidad++;
+            }
+            ranking.add(new RankingTO(empleado,cantidad));
+        }
+        Collections.sort(ranking, new Comparator<RankingTO>() {
+            @Override
+            public int compare(RankingTO p1, RankingTO p2) {
+                return new Integer(p2.getCantidadIncidencias()).compareTo(new Integer(p1.getCantidadIncidencias()));
+            }
+        });
+        return ranking;
+    }
 }

@@ -3,6 +3,7 @@ package com.kiwi.vista;
 import com.kiwi.Modelo.Empleado;
 import com.kiwi.Modelo.Historial;
 import com.kiwi.Modelo.Incidencia;
+import com.kiwi.Modelo.RankingTO;
 import com.kiwi.excepciones.Excepciones;
 import com.kiwi.manager.MongodbManager;
 import org.bson.Document;
@@ -63,6 +64,9 @@ public class Main {
                         showUltimoAcceso();
                         break;
 
+                    case 10:
+                        getRankingByIncidencias();
+                        break;
 /*                    case 10:
                         mongodbManager.idUsuarioByUserName("x");
                         break;*/
@@ -254,7 +258,7 @@ public class Main {
         String detalle = InputAsker.askString("Indique el detalle de esta Incidencia: ");
         String tipo =  InputAsker.askString("Que tipo es: URGENTE/NORMAL: ");
 
-        Incidencia incidencia = new Incidencia(fechaHora,origen,destino,detalle,tipo);
+        Incidencia incidencia = new Incidencia(fechaHora,origen,destino,detalle,tipo.toLowerCase());
         mongodbManager.insertIncidencia(incidencia);
 
         //tambien insertaremos el historial aca si es tipo urgente
@@ -378,5 +382,16 @@ public class Main {
         System.out.println(historial.getFechaHora()+"\n");
     }
 
+
+    /**
+     * FUNCION que muestra el ranking de empleados
+     */
+    public static void getRankingByIncidencias(){
+        List<RankingTO> ranking = mongodbManager.getRankingEmpleados();
+        System.out.println("** RANKING DE EMPLEADOS **");
+        for (RankingTO x: ranking){
+            System.out.println(x);
+        }
+    }
 
 }
