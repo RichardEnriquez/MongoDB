@@ -37,6 +37,9 @@ public class MongodbManager {
 
         mongoClient = new MongoClient();
         database = mongoClient.getDatabase("incidencias_system_manager");
+
+        //cuando es iniciado verificaremos si hay un usuario admin para que se pueda usar la aplicacion
+        generateAdmin();
     }
 
     /**
@@ -438,5 +441,14 @@ public class MongodbManager {
             }
         });
         return ranking;
+    }
+
+
+    private void generateAdmin(){
+        if (!ExistUserName("admin")){
+            Empleado empleado = new Empleado("admin","admin","admin",000000000);
+            insertEmpleado(empleado);
+        }
+
     }
 }
