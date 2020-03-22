@@ -443,7 +443,10 @@ public class MongodbManager {
         return ranking;
     }
 
-
+    /**
+     * funcion que crea usuario admin si no existe en la base de datos+
+     * usaremos esta funcion cuando la aplicacion es ejecutada por primera vez
+     */
     private void generateAdmin(){
         if (!ExistUserName("admin")){
             Empleado empleado = new Empleado("admin","admin","admin",000000000);
