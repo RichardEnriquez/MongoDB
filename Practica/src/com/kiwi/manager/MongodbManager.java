@@ -173,7 +173,7 @@ public class MongodbManager {
         Document update = new Document();
         update.append("$set", setData);
 
-        //System.out.println(collection.updateOne(search,update));
+        collection.updateOne(search,update);
     }
 
 

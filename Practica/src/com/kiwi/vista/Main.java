@@ -208,6 +208,8 @@ public class Main {
             default:
                 throw new Excepciones(3);
         }
+
+        System.out.println("* Campo actualizado correctamente *");
     }
 
     /**
