@@ -94,3 +94,8 @@ collection.updateMany(eq("name","jose"),new Document("$set",newDocument("edad","
 ## Consulta
 ![9](https://github.com/RichardEnriquez/MongoDB/blob/master/Image/9.png)
 ![10](https://github.com/RichardEnriquez/MongoDB/blob/master/Image/10.png)
+
+### Cierrar Session
+~~~java
+MongoClient.close()
+~~~
