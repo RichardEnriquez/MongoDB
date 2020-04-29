@@ -34,7 +34,19 @@ import com.mongodb.client.MongoDatabase;
 MongoClient client = new MongoClient();
 MongoDatabase database = client.getDatabase("default-db");
 ~~~
-
+~~~java
+MongoClientURI uri = new MongoClientURI("mongodb://user1:pwd1@host1/?authSource=db1");
+MongoClient mongoClient = new MongoClient(uri);
+~~~
+~~~java
+String user; // the user name
+String database; // the name of the database in which the user is defined
+char[] password; // the password as a character array
+// ...
+MongoCredential credential = MongoCredential.createCredential(user, database, password);
+MongoClient mongoClient = new MongoClient(new ServerAddress("host1", 27017),
+                                         Arrays.asList(credential));
+~~~					 
 ## Insertar
 
 ![2](https://github.com/RichardEnriquez/MongoDB/blob/master/Image/2.png)
