@@ -56,7 +56,7 @@ import com.mongodb.client.MongoCollection;
 
 ~~~java	
 								  //key   value         key    value
-collection.insertOne(new Document("name","jose").append("edad","20"));
+collection.insertOne(new Document("name","jose").append("edad",20));
 ~~~
 ![3](https://github.com/RichardEnriquez/MongoDB/blob/master/Image/3.png)
 
