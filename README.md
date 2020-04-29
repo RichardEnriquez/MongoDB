@@ -39,9 +39,9 @@ MongoClientURI uri = new MongoClientURI("mongodb://user1:pwd1@host1/?authSource=
 MongoClient mongoClient = new MongoClient(uri);
 ~~~
 ~~~java
-String user; // the user name
-String database; // the name of the database in which the user is defined
-char[] password; // the password as a character array
+String user; 
+String database; 
+char[] password; 
 // ...
 MongoCredential credential = MongoCredential.createCredential(user, database, password);
 MongoClient mongoClient = new MongoClient(new ServerAddress("host1", 27017),
